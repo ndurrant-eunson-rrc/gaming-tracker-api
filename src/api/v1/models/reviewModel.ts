@@ -5,7 +5,7 @@ export interface Review {
   id: string;
   gameTitle: string;
   score: number;
-  body: string;
+  review: string;
   createdAt: Date;
   updatedAt: Date;
 }

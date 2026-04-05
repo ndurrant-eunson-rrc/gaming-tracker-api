@@ -7,6 +7,7 @@ import setupSwagger from "../config/swagger";
 import helmet from "helmet";
 import cors from "cors";
 import entryRoutes from "./api/v1/routes/entryRoutes";
+import reviewRoutes from "./api/v1/routes/reviewRoutes";
 
 const app: Express = express();
 
@@ -18,6 +19,6 @@ app.use(express.json());
 app.use("/api/v1", healthRoutes);
 // app.use("/api/v1/games", gameRoutes);
 app.use("/api/v1/entries", entryRoutes);
-// app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 export default app;
