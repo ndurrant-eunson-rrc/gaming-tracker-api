@@ -1,7 +1,9 @@
+/**
+ * Represents a user's review for a game
+ */
 export interface Review {
   id: string;
-  userId: string;
-  gameId: string;
+  gameTitle: string;
   score: number;
   body: string;
   createdAt: Date;
