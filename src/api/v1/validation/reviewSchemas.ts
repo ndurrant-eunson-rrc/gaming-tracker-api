@@ -18,7 +18,7 @@ import Joi from "joi";
  *           minimum: 1
  *           maximum: 100
  *           example: 94
- *         body:
+ *         review:
  *           type: string
  *           example: "absolute masterpiece obviously"
  *         createdAt:
@@ -40,7 +40,7 @@ export const reviewSchemas = {
         "number.min": "Score must be at least 1",
         "number.max": "Score cannot exceed 100",
       }),
-      body: Joi.string().required().messages({
+      review: Joi.string().required().messages({
         "any.required": "Review body is required",
         "string.empty": "Review body cannot be empty",
       }),
@@ -51,7 +51,7 @@ export const reviewSchemas = {
     body: Joi.object({
       gameTitle: Joi.string().optional(),
       score: Joi.number().min(1).max(100).optional(),
-      body: Joi.string().optional(),
+      review: Joi.string().optional(),
     }),
   },
   getById: {
