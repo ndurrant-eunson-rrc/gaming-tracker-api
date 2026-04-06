@@ -8,6 +8,7 @@ import helmet from "helmet";
 import cors from "cors";
 import entryRoutes from "./api/v1/routes/entryRoutes";
 import reviewRoutes from "./api/v1/routes/reviewRoutes";
+import wishlistRoutes from "./api/v1/routes/wishlistRoutes";
 
 const app: Express = express();
 
@@ -17,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1", healthRoutes);
-// app.use("/api/v1/games", gameRoutes);
+app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/entries", entryRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 
