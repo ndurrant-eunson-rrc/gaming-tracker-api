@@ -46,6 +46,6 @@ their thoughts, or the gameplay.
 | Joi validation | Rquest body validation on all POST and PUT routes |
 | dotenv | Environment variales for Firebase credentials |
 | helmet.js, CORS | Applied globally in Express app setup |
-| Layers architecture | Routes, Controllers, Services, Respositories |
+| Layered architecture | Routes, Controllers, Services, Respositories |
 | GitHub Actions CI | Runs Jest and ESLint on push and pull requests |
 | Nodemailer (for new component implementation) | Email notifications on key events which is not covered in course however all documentation for usage is found at https://nodemailer.com, and it will be used to send registration confirmation as well as a confirmation email for entries created, updated and deleted |
