@@ -38,5 +38,14 @@ their thoughts, or the gameplay.
 ## Course Alignment
 | Requirement | How It Is Met |
 | -------- | -------- |
-| Cell 1   | Cell 2   |
-| Cell 4   | Cell 5   |
+| Firebase Firestore | Primary database to store all entries  |
+| Firebase Authentication | User registration, login, and JWT verification middleware |
+| Role-based authorization | Firebase custom claims to protect endpoints by user role |
+| Jest unit testing | Unit tests for all service and repository functions |
+| Swagger, OpenAPI Documentation | All endpoints documented with request and response schemas |
+| Joi validation | Rquest body validation on all POST and PUT routes |
+| dotenv | Environment variales for Firebase credentials |
+| helmet.js, CORS | Applied globally in Express app setup |
+| Layers architecture | Routes, Controllers, Services, Respositories |
+| GitHub Actions CI | Runs Jest and ESLint on push and pull requests |
+| Nodemailer (for new component implementation) | Email notifications on key events which is not covered in course however all documentation for usage is found at https://nodemailer.com, and it will be used to send registration confirmation as well as a confirmation email for entries created, updated and deleted |
