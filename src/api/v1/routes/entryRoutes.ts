@@ -58,6 +58,7 @@ router.get("/:id", validateRequest(entrySchemas.getById), entryController.getEnt
  * /entries:
  *   post:
  *     summary: Create a new entry
+ *     tags: [Entries]
  *     requestBody:
  *       required: true
  *       content:
