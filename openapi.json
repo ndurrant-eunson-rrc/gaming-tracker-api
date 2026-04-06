@@ -26,6 +26,149 @@
     }
   ],
   "paths": {
+    "/entries": {
+      "get": {
+        "summary": "Get all backlog entries",
+        "tags": [
+          "Entries"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of entries retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BacklogEntry"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new entry",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BacklogEntry"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Entry created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/entries/{id}": {
+      "get": {
+        "summary": "Get a single entry by ID",
+        "tags": [
+          "Entries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BacklogEntry"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entry not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing backlog entry",
+        "tags": [
+          "Entries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BacklogEntry"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Entry updated successfully"
+          },
+          "404": {
+            "description": "Entry not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a backlog entry",
+        "tags": [
+          "Entries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry deleted successfully"
+          },
+          "404": {
+            "description": "Entry not found"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Check server health status",
@@ -56,6 +199,152 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "get": {
+        "summary": "Get all reviews",
+        "tags": [
+          "Reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reviews retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Review"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new review",
+        "tags": [
+          "Reviews"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "summary": "Get a single review by ID",
+        "tags": [
+          "Reviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing review",
+        "tags": [
+          "Reviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review updated successfully"
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a review",
+        "tags": [
+          "Reviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted successfully"
+          },
+          "404": {
+            "description": "Review not found"
           }
         }
       }
