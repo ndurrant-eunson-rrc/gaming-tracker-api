@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { setCustomClaims, getUserDetails } from "./../controllers/adminController";
 import authenticate from "../middleware/authenticate";
 import isAuthorized from "../middleware/authorize";
+import { sendWelcomeEmail } from "../services/emailService"; // for testing email sending
 
 const router: Router = express.Router();
 
@@ -73,5 +74,16 @@ router.get(
   isAuthorized({ hasRole: ["admin"] }),
   getUserDetails
 );
+
+// this is for testing email sending, will be removed and properly implemented later
+router.post("/test-email", async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+    await sendWelcomeEmail(email, name);
+    res.status(200).json({ status: "success", message: "Test email sent" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;
