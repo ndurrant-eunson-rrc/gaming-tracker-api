@@ -9,6 +9,7 @@ import cors from "cors";
 import entryRoutes from "./api/v1/routes/entryRoutes";
 import reviewRoutes from "./api/v1/routes/reviewRoutes";
 import wishlistRoutes from "./api/v1/routes/wishlistRoutes";
+import adminRoutes from "./api/v1/routes/adminRoutes";
 
 const app: Express = express();
 
@@ -21,5 +22,6 @@ app.use("/api/v1", healthRoutes);
 app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/entries", entryRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 export default app;
