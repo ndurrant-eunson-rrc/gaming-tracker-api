@@ -1,6 +1,8 @@
 import * as entryRepository from "../repositories/entryRepository";
 import { BacklogEntry } from "../models/entryModel";
 import { ServiceError } from "../errors/errors";
+import { auth } from "../../../../config/firebaseConfig";
+import { sendCompletionEmail } from "./emailService";
 
 /**
  * Converts a Firestore Timestamp or Date to an ISO string
@@ -35,10 +37,15 @@ export const getAllEntries = async (): Promise<BacklogEntry[]> => {
   }
 };
 
+/**
+ * Retrieves a single backlog entry by ID
+ * @param id - Entry document ID
+ * @returns The backlog entry
+ */
 export const getEntryById = async (id: string): Promise<BacklogEntry> => {
   const doc = await entryRepository.getEntryById(id);
   if (!doc) throw new ServiceError("Entry not found", "ENTRY_NOT_FOUND", 404);
-  
+
   const data = doc.data();
   if (!data) throw new ServiceError("Entry data is missing", "ENTRY_DATA_MISSING", 404);
 
@@ -65,21 +72,39 @@ export const createEntry = async (
 };
 
 /**
- * Updates an existing backlog entry and returns the updated entry
+ * Updates an existing backlog entry and returns the updated entry.
+ * Sends a completion email if the status is changed to "completed".
  * @param id - Entry document ID
  * @param data - Fields to update
+ * @param uid - The authenticated user's UID
  * @returns The updated backlog entry
  */
 export const updateEntry = async (
   id: string,
-  data: Partial<Pick<BacklogEntry, "title" | "genre" | "platform" | "franchise" | "status" | "rating" | "notes">>
+  data: Partial<Pick<BacklogEntry, "title" | "genre" | "platform" | "franchise" | "status" | "rating" | "notes">>,
+  uid?: string
 ): Promise<BacklogEntry> => {
   const existing = await entryRepository.getEntryById(id);
   if (!existing) throw new ServiceError("Entry not found", "ENTRY_NOT_FOUND", 404);
 
   await entryRepository.updateEntry(id, { ...data, updatedAt: new Date() });
 
-  // This will fetch the updated document and return it in the confirmation response.
+  // Sends the completion email
+  if (data.status === "completed" && uid) {
+    try {
+      const existingData = existing.data();
+      const gameTitle = existingData?.title ?? "your game";
+      const userRecord = await auth.getUser(uid);
+      const userEmail = userRecord.email;
+
+      if (userEmail) {
+        await sendCompletionEmail(userEmail, gameTitle, uid, data.rating);
+      }
+    } catch (error) {
+      console.error("Failed to send completion email:", error);
+    }
+  }
+
   const updated = await entryRepository.getEntryById(id);
   if (!updated) throw new ServiceError("Entry not found after update", "ENTRY_NOT_FOUND", 404);
 

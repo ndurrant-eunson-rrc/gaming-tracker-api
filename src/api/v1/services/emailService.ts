@@ -56,15 +56,15 @@ export const sendWelcomeEmail = async (
  */
 export const sendCompletionEmail = async (
     toEmail: string,
-    userID: string,
     gameTitle: string,
+    userId: string,
     rating?: number
 ): Promise<void> => {
     try {
         const transporter = createTransporter();
 
         const ratingText = rating
-            ? `You rated ${gameTitle} <strong>${rating}/10</strong>.`
+            ? `You rated it <strong>${rating}/10</strong>.`
             : "You didn't leave a rating.";
 
         await transporter.sendMail({
@@ -72,13 +72,13 @@ export const sendCompletionEmail = async (
             to: toEmail,
             subject: `You completed ${gameTitle}!`,
             html: `
-        <h1>Good job, ${userID}!</h1>
-        <p>You just completed <strong>${gameTitle}</strong>!</p>
-        <p>${ratingText}</p>
-        <br/>
-        <p>Keep up the great work and happy gaming!</p>
-        <p><strong>Gaming Tracker</strong></p>
-      `,
+    <h1>Good job!</h1>
+    <p>You just completed <strong>${gameTitle}</strong>!</p>
+    <p>You gave it a rating of ${ratingText}</p>
+    <br/>
+    <p>Keep up the great work and happy gaming!</p>
+    <p><strong>Gaming Tracker</strong></p>
+    `,
         });
     } catch (error) {
         throw new ServiceError("Failed to send completion email", "EMAIL_SEND_FAILED");

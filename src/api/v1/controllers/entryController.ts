@@ -61,7 +61,8 @@ export const createEntry = async (
 };
 
 /**
- * Updates an existing backlog entry
+ * Updates an existing backlog entry and returns the updated entry.
+ * Passes the authenticated user's UID so a completion email can be sent.
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -72,7 +73,8 @@ export const updateEntry = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const updatedEntry = await entryService.updateEntry(req.params.id as string, req.body);
+    const uid: string = res.locals.uid;
+    const updatedEntry = await entryService.updateEntry(req.params.id as string, req.body, uid);
     res.status(HTTP_STATUS.OK).json(successResponse(updatedEntry, "Entry updated"));
   } catch (error) {
     next(error);
