@@ -74,7 +74,7 @@ export const sendCompletionEmail = async (
             html: `
     <h1>Good job!</h1>
     <p>You just completed <strong>${gameTitle}</strong>!</p>
-    <p>You gave it a rating of ${ratingText}</p>
+    <p>${ratingText}</p>
     <br/>
     <p>Keep up the great work and happy gaming!</p>
     <p><strong>Gaming Tracker</strong></p>
