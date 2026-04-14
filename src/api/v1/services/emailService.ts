@@ -84,3 +84,64 @@ export const sendCompletionEmail = async (
         throw new ServiceError("Failed to send completion email", "EMAIL_SEND_FAILED");
     }
 };
+
+/**
+ * Sends a confirmation email when a user creates a review
+ * @param toEmail - The recipient's email address
+ * @param gameTitle - The title of the reviewed game
+ * @param score - The score the user gave the game
+ */
+export const sendReviewEmail = async (
+  toEmail: string,
+  gameTitle: string,
+  score: number
+): Promise<void> => {
+  try {
+    const transporter = createTransporter();
+ 
+    await transporter.sendMail({
+      from: `"Gaming Tracker" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `You reviewed ${gameTitle}!`,
+      html: `
+        <h1>Review created!</h1>
+        <p>You reviewed <strong>${gameTitle}</strong> and gave it <strong>${score}/10</strong>.</p>
+        <br/>
+        <p><strong>Gaming Tracker</strong></p>
+      `,
+    });
+  } catch (error) {
+    throw new ServiceError("Failed to send review email", "EMAIL_SEND_FAILED");
+  }
+};
+ 
+/**
+ * Sends a confirmation email when a user adds a game to their wishlist
+ * @param toEmail - The recipient's email address
+ * @param gameTitle - The title of the wishlisted game
+ * @param priority - The priority level set by the user
+ */
+export const sendWishlistEmail = async (
+  toEmail: string,
+  gameTitle: string,
+  priority: string
+): Promise<void> => {
+  try {
+    const transporter = createTransporter();
+ 
+    await transporter.sendMail({
+      from: `"Gaming Tracker" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `${gameTitle} added to your wishlist!`,
+      html: `
+        <h1>Wishlist updated!</h1>
+        <p><strong>${gameTitle}</strong> has been added to your wishlist with <strong>${priority}</strong> priority.</p>
+        <br/>
+        <p><strong>Gaming Tracker</strong></p>
+      `,
+    });
+  } catch (error) {
+    throw new ServiceError("Failed to send wishlist email", "EMAIL_SEND_FAILED");
+  }
+};
+ 
