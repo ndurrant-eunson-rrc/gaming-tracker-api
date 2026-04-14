@@ -2,6 +2,8 @@ import * as reviewRepository from "../repositories/reviewRepository";
 import { Review } from "../models/reviewModel";
 import { ServiceError } from "../errors/errors";
 import { Timestamp } from "firebase-admin/firestore";
+import { auth } from "../../../../config/firebaseConfig";
+import { sendReviewEmail } from "./emailService";
 
 /**
  * Converts a Firestore Timestamp or Date to an ISO string
@@ -57,16 +59,33 @@ export const getReviewById = async (id: string): Promise<Review> => {
 };
 
 /**
- * Creates a new review
+ * Creates a new review and sends a confirmation email
  * @param data - Review fields from request body
+ * @param uid - The authenticated user's UID
  * @returns The ID of the created review
  */
 export const createReview = async (
-  data: Pick<Review, "gameTitle" | "score" | "review">
+  data: Pick<Review, "gameTitle" | "score" | "review">,
+  uid?: string
 ): Promise<string> => {
   const now = new Date();
   const review: Partial<Review> = { ...data, createdAt: now, updatedAt: now };
-  return reviewRepository.createReview(review);
+  const id = await reviewRepository.createReview(review);
+
+  // Send review confirmation email
+  if (uid) {
+    try {
+      const userRecord = await auth.getUser(uid);
+      const userEmail = userRecord.email;
+      if (userEmail) {
+        await sendReviewEmail(userEmail, data.gameTitle, data.score);
+      }
+    } catch (error) {
+      console.error("Failed to send review email:", error);
+    }
+  }
+
+  return id;
 };
 
 /**

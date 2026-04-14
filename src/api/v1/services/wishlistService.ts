@@ -2,6 +2,8 @@ import * as wishlistRepository from "../repositories/wishlistRepository";
 import { Wishlist } from "../models/wishlistModel";
 import { ServiceError } from "../errors/errors";
 import { Timestamp } from "firebase-admin/firestore";
+import { auth } from "../../../../config/firebaseConfig";
+import { sendWishlistEmail } from "./emailService";
 
 /**
  * Converts a Firestore Timestamp or Date to an ISO string
@@ -57,16 +59,33 @@ export const getWishlistItemById = async (id: string): Promise<Wishlist> => {
 };
 
 /**
- * Creates a new wishlist item
+ * Creates a new wishlist item and sends a confirmation email
  * @param data - Wishlist item fields from request body
+ * @param uid - The authenticated user's UID
  * @returns The ID of the created wishlist item
  */
 export const createWishlistItem = async (
-  data: Pick<Wishlist, "gameTitle" | "priority"> & Partial<Pick<Wishlist, "notes">>
+  data: Pick<Wishlist, "gameTitle" | "priority"> & Partial<Pick<Wishlist, "notes">>,
+  uid?: string
 ): Promise<string> => {
   const now = new Date();
   const item: Partial<Wishlist> = { ...data, addedAt: now, updatedAt: now };
-  return wishlistRepository.createWishlistItem(item);
+  const id = await wishlistRepository.createWishlistItem(item);
+
+  // Send wishlist confirmation email
+  if (uid) {
+    try {
+      const userRecord = await auth.getUser(uid);
+      const userEmail = userRecord.email;
+      if (userEmail) {
+        await sendWishlistEmail(userEmail, data.gameTitle, data.priority);
+      }
+    } catch (error) {
+      console.error("Failed to send wishlist email:", error);
+    }
+  }
+
+  return id;
 };
 
 /**
