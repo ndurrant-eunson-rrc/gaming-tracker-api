@@ -42,7 +42,7 @@ export const getReviewById = async (
 };
 
 /**
- * Creates a new review
+ * Creates a new review and sends a confirmation email to the user
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -53,7 +53,8 @@ export const createReview = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = await reviewService.createReview(req.body);
+    const uid: string = res.locals.uid;
+    const id = await reviewService.createReview(req.body, uid);
     res.status(HTTP_STATUS.CREATED).json(successResponse({ id }, "Review created"));
   } catch (error) {
     next(error);
