@@ -42,7 +42,7 @@ export const getEntryById = async (
 };
 
 /**
- * Creates a new backlog entry
+ * Creates a new backlog entry and returns the created entry
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -53,16 +53,15 @@ export const createEntry = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = await entryService.createEntry(req.body);
-    res.status(HTTP_STATUS.CREATED).json(successResponse({ id }, "Entry created"));
+    const createdEntry = await entryService.createEntry(req.body);
+    res.status(HTTP_STATUS.CREATED).json(successResponse(createdEntry, "Entry created"));
   } catch (error) {
     next(error);
   }
 };
 
 /**
- * Updates an existing backlog entry and returns the updated entry.
- * Passes the authenticated user's UID so a completion email can be sent.
+ * Updates an existing backlog entry and returns the updated entry
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -82,7 +81,7 @@ export const updateEntry = async (
 };
 
 /**
- * Deletes a backlog entry by ID
+ * Deletes a backlog entry and returns the deleted entry
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -93,8 +92,8 @@ export const deleteEntry = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    await entryService.deleteEntry(req.params.id as string);
-    res.status(HTTP_STATUS.OK).json(successResponse({}, "Entry deleted"));
+    const deletedEntry = await entryService.deleteEntry(req.params.id as string);
+    res.status(HTTP_STATUS.OK).json(successResponse(deletedEntry, "Entry deleted"));
   } catch (error) {
     next(error);
   }

@@ -42,7 +42,7 @@ export const getWishlistItemById = async (
 };
 
 /**
- * Creates a new wishlist item and sends a confirmation email to the user
+ * Creates a new wishlist item and returns the created item
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -54,8 +54,8 @@ export const createWishlistItem = async (
 ): Promise<void> => {
   try {
     const uid: string = res.locals.uid;
-    const id = await wishlistService.createWishlistItem(req.body, uid);
-    res.status(HTTP_STATUS.CREATED).json(successResponse({ id }, "Wishlist item created"));
+    const createdItem = await wishlistService.createWishlistItem(req.body, uid);
+    res.status(HTTP_STATUS.CREATED).json(successResponse(createdItem, "Wishlist item created"));
   } catch (error) {
     next(error);
   }
@@ -81,7 +81,7 @@ export const updateWishlistItem = async (
 };
 
 /**
- * Deletes a wishlist item by ID
+ * Deletes a wishlist item and returns the deleted item
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
@@ -92,8 +92,8 @@ export const deleteWishlistItem = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    await wishlistService.deleteWishlistItem(req.params.id as string);
-    res.status(HTTP_STATUS.OK).json(successResponse({}, "Wishlist item deleted"));
+    const deletedItem = await wishlistService.deleteWishlistItem(req.params.id as string);
+    res.status(HTTP_STATUS.OK).json(successResponse(deletedItem, "Wishlist item deleted"));
   } catch (error) {
     next(error);
   }
