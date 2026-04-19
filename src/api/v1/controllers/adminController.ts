@@ -55,8 +55,8 @@ export const getUserDetails = async (
 };
 
 /**
- * Creates a new Firebase user and sends a welcome email
- * @param req - Express request object containing email, password, and displayName in body
+ * Creates a new Firebase user, automatically assigns a user role, and sends a welcome email
+ * @param req - Express request object containing email, password, displayName in body
  * @param res - Express response object
  * @param next - Express next function
  */
@@ -75,6 +75,9 @@ export const createUser = async (
       displayName,
     });
 
+    // Automatically assigns default "user" role
+    await auth.setCustomUserClaims(userRecord.uid, { role: "user" });
+
     // Sends welcome email
     await sendWelcomeEmail(email, displayName ?? email);
 
@@ -84,8 +87,9 @@ export const createUser = async (
           uid: userRecord.uid,
           email: userRecord.email,
           displayName: userRecord.displayName,
+          role: "user",
         },
-        "User created successfully"
+        "User created successfully. Welcome email sent."
       )
     );
   } catch (error) {
