@@ -1,8 +1,7 @@
 import express, { Router } from "express";
-import { setCustomClaims, getUserDetails } from "./../controllers/adminController";
+import { setCustomClaims, getUserDetails, createUser } from "./../controllers/adminController";
 import authenticate from "../middleware/authenticate";
 import isAuthorized from "../middleware/authorize";
-import { sendWelcomeEmail } from "../services/emailService"; // for testing email sending
 
 const router: Router = express.Router();
 
@@ -75,15 +74,44 @@ router.get(
   getUserDetails
 );
 
-// this is for testing email sending, will be removed and properly implemented later
-router.post("/test-email", async (req, res, next) => {
-  try {
-    const { email, name } = req.body;
-    await sendWelcomeEmail(email, name);
-    res.status(200).json({ status: "success", message: "Test email sent" });
-  } catch (error) {
-    next(error);
-  }
-});
+/**
+ * @openapi
+ * /admin/users:
+ *   post:
+ *     summary: Create a new user and send a welcome email (admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@email.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *               displayName:
+ *                 type: string
+ *                 example: "Tom Cruise"
+ *     responses:
+ *       '201':
+ *         description: User created and welcome email sent
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
+ */
+router.post(
+  "/users",
+  authenticate,
+  isAuthorized({ hasRole: ["admin"] }),
+  createUser
+);
 
 export default router;

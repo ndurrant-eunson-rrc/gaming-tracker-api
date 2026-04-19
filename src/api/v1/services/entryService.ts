@@ -1,6 +1,7 @@
 import * as entryRepository from "../repositories/entryRepository";
 import { BacklogEntry } from "../models/entryModel";
 import { ServiceError } from "../errors/errors";
+import { Timestamp } from "firebase-admin/firestore";
 import { auth } from "../../../../config/firebaseConfig";
 import { sendCompletionEmail } from "./emailService";
 
@@ -9,9 +10,24 @@ import { sendCompletionEmail } from "./emailService";
  * @param value - Timestamp or Date object
  * @returns ISO date string
  */
-const toISOString = (value: FirebaseFirestore.Timestamp | Date): string => {
+const toISOString = (value: Timestamp | Date): string => {
   if (value instanceof Date) return value.toISOString();
   return value.toDate().toISOString();
+};
+
+/**
+ * Maps a Firestore document to a BacklogEntry object
+ * @param doc - Firestore document snapshot
+ * @returns BacklogEntry object
+ */
+const mapDocToEntry = (doc: FirebaseFirestore.DocumentSnapshot): BacklogEntry => {
+  const data = doc.data()!;
+  return {
+    ...data,
+    id: doc.id,
+    createdAt: toISOString(data.createdAt),
+    updatedAt: toISOString(data.updatedAt),
+  } as unknown as BacklogEntry;
 };
 
 /**
@@ -23,15 +39,7 @@ export const getAllEntries = async (): Promise<BacklogEntry[]> => {
     const snapshot = await entryRepository.getAllEntries();
     return snapshot.docs
       .filter((doc) => doc.data() !== undefined)
-      .map((doc) => {
-        const data = doc.data()!;
-        return {
-          ...data,
-          id: doc.id,
-          createdAt: toISOString(data.createdAt),
-          updatedAt: toISOString(data.updatedAt),
-        } as unknown as BacklogEntry;
-      });
+      .map(mapDocToEntry);
   } catch (error) {
     throw new ServiceError("Failed to retrieve entries", "GET_ENTRIES_FAILED");
   }
@@ -49,26 +57,26 @@ export const getEntryById = async (id: string): Promise<BacklogEntry> => {
   const data = doc.data();
   if (!data) throw new ServiceError("Entry data is missing", "ENTRY_DATA_MISSING", 404);
 
-  return {
-    ...data,
-    id: doc.id,
-    createdAt: toISOString(data.createdAt),
-    updatedAt: toISOString(data.updatedAt),
-  } as unknown as BacklogEntry;
+  return mapDocToEntry(doc);
 };
 
 /**
  * Creates a new backlog entry
  * @param data - Entry fields from request body
- * @returns The ID of the created entry
+ * @returns The created backlog entry
  */
 export const createEntry = async (
   data: Pick<BacklogEntry, "title" | "genre" | "platform" | "status"> &
     Partial<Pick<BacklogEntry, "franchise" | "rating" | "notes">>
-): Promise<string> => {
+): Promise<BacklogEntry> => {
   const now = new Date();
   const entry: Partial<BacklogEntry> = { ...data, createdAt: now, updatedAt: now };
-  return entryRepository.createEntry(entry);
+  const id = await entryRepository.createEntry(entry);
+
+  const created = await entryRepository.getEntryById(id);
+  if (!created) throw new ServiceError("Entry not found after creation", "ENTRY_NOT_FOUND", 404);
+
+  return mapDocToEntry(created);
 };
 
 /**
@@ -89,14 +97,13 @@ export const updateEntry = async (
 
   await entryRepository.updateEntry(id, { ...data, updatedAt: new Date() });
 
-  // Sends the completion email
+  // Send completion email if status changed to completed
   if (data.status === "completed" && uid) {
     try {
       const existingData = existing.data();
-      const gameTitle = existingData?.title ?? "your game";
+      const gameTitle = existingData?.title as string ?? "your game";
       const userRecord = await auth.getUser(uid);
       const userEmail = userRecord.email;
-
       if (userEmail) {
         await sendCompletionEmail(userEmail, gameTitle, uid, data.rating);
       }
@@ -108,23 +115,19 @@ export const updateEntry = async (
   const updated = await entryRepository.getEntryById(id);
   if (!updated) throw new ServiceError("Entry not found after update", "ENTRY_NOT_FOUND", 404);
 
-  const updatedData = updated.data();
-  if (!updatedData) throw new ServiceError("Entry data is missing", "ENTRY_DATA_MISSING", 404);
-
-  return {
-    ...updatedData,
-    id: updated.id,
-    createdAt: toISOString(updatedData.createdAt),
-    updatedAt: toISOString(updatedData.updatedAt),
-  } as unknown as BacklogEntry;
+  return mapDocToEntry(updated);
 };
 
 /**
- * Deletes a backlog entry by ID
+ * Deletes a backlog entry by ID and returns the deleted entry
  * @param id - Entry document ID
+ * @returns The deleted backlog entry
  */
-export const deleteEntry = async (id: string): Promise<void> => {
+export const deleteEntry = async (id: string): Promise<BacklogEntry> => {
   const existing = await entryRepository.getEntryById(id);
   if (!existing) throw new ServiceError("Entry not found", "ENTRY_NOT_FOUND", 404);
+
+  const deletedEntry = mapDocToEntry(existing);
   await entryRepository.deleteEntry(id);
+  return deletedEntry;
 };

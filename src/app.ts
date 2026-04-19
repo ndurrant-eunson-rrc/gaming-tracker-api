@@ -8,8 +8,8 @@ import entryRoutes from "./api/v1/routes/entryRoutes";
 import reviewRoutes from "./api/v1/routes/reviewRoutes";
 import wishlistRoutes from "./api/v1/routes/wishlistRoutes";
 import adminRoutes from "./api/v1/routes/adminRoutes";
-import { getCorsConfig } from "config/corsConfig";
-import { getHelmetConfig } from "config/helmetConfig";
+import { getCorsConfig } from "../config/corsConfig";
+import { getHelmetConfig } from "../config/helmetConfig";
 import setupSwagger from "../config/swagger";
 
 const app: Express = express();
