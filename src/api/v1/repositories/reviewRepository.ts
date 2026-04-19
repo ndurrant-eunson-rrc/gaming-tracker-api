@@ -9,7 +9,7 @@ const COLLECTION = "reviews";
  * @returns The ID of the created document
  */
 export const createReview = async (data: Partial<Review>): Promise<string> => {
-  return firestoreRepository.createDocument<Review>(COLLECTION, data);
+	return firestoreRepository.createDocument<Review>(COLLECTION, data);
 };
 
 /**
@@ -17,7 +17,7 @@ export const createReview = async (data: Partial<Review>): Promise<string> => {
  * @returns QuerySnapshot of all reviews
  */
 export const getAllReviews = async (): Promise<FirebaseFirestore.QuerySnapshot> => {
-  return firestoreRepository.getDocuments(COLLECTION);
+	return firestoreRepository.getDocuments(COLLECTION);
 };
 
 /**
@@ -26,9 +26,9 @@ export const getAllReviews = async (): Promise<FirebaseFirestore.QuerySnapshot> 
  * @returns DocumentSnapshot or null
  */
 export const getReviewById = async (
-  id: string
+	id: string
 ): Promise<FirebaseFirestore.DocumentSnapshot | null> => {
-  return firestoreRepository.getDocumentById(COLLECTION, id);
+	return firestoreRepository.getDocumentById(COLLECTION, id);
 };
 
 /**
@@ -37,7 +37,7 @@ export const getReviewById = async (
  * @param data - Fields to update
  */
 export const updateReview = async (id: string, data: Partial<Review>): Promise<void> => {
-  return firestoreRepository.updateDocument<Review>(COLLECTION, id, data);
+	return firestoreRepository.updateDocument<Review>(COLLECTION, id, data);
 };
 
 /**
@@ -45,5 +45,5 @@ export const updateReview = async (id: string, data: Partial<Review>): Promise<v
  * @param id - Review document ID
  */
 export const deleteReview = async (id: string): Promise<void> => {
-  return firestoreRepository.deleteDocument(COLLECTION, id);
+	return firestoreRepository.deleteDocument(COLLECTION, id);
 };

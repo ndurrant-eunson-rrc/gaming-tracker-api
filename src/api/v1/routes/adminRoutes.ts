@@ -38,10 +38,10 @@ const router: Router = express.Router();
  *         description: Forbidden
  */
 router.post(
-  "/setCustomClaims",
-  authenticate,
-  isAuthorized({ hasRole: ["admin"] }),
-  setCustomClaims
+	"/setCustomClaims",
+	authenticate,
+	isAuthorized({ hasRole: ["admin"] }),
+	setCustomClaims
 );
 
 /**
@@ -68,10 +68,10 @@ router.post(
  *         description: Forbidden
  */
 router.get(
-  "/users/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin"] }),
-  getUserDetails
+	"/users/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin"] }),
+	getUserDetails
 );
 
 /**
@@ -108,10 +108,10 @@ router.get(
  *         description: Forbidden
  */
 router.post(
-  "/users",
-  authenticate,
-  isAuthorized({ hasRole: ["admin"] }),
-  createUser
+	"/users",
+	authenticate,
+	isAuthorized({ hasRole: ["admin"] }),
+	createUser
 );
 
 export default router;

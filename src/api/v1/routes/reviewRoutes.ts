@@ -24,10 +24,10 @@ const router: Router = express.Router();
  *         description: Forbidden
  */
 router.get(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  reviewController.getAllReviews
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	reviewController.getAllReviews
 );
 
 /**
@@ -55,11 +55,11 @@ router.get(
  *         description: Review not found
  */
 router.get(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  validateRequest(reviewSchemas.getById),
-  reviewController.getReviewById
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	validateRequest(reviewSchemas.getById),
+	reviewController.getReviewById
 );
 
 /**
@@ -87,11 +87,11 @@ router.get(
  *         description: Forbidden
  */
 router.post(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(reviewSchemas.create),
-  reviewController.createReview
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.create),
+	reviewController.createReview
 );
 
 /**
@@ -125,11 +125,11 @@ router.post(
  *         description: Review not found
  */
 router.put(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(reviewSchemas.update),
-  reviewController.updateReview
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.update),
+	reviewController.updateReview
 );
 
 /**
@@ -157,11 +157,11 @@ router.put(
  *         description: Review not found
  */
 router.delete(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(reviewSchemas.delete),
-  reviewController.deleteReview
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.delete),
+	reviewController.deleteReview
 );
 
 export default router;

@@ -11,8 +11,8 @@ import { sendReviewEmail } from "./emailService";
  * @returns ISO date string
  */
 const toISOString = (value: Timestamp | Date): string => {
-  if (value instanceof Date) return value.toISOString();
-  return value.toDate().toISOString();
+	if (value instanceof Date) return value.toISOString();
+	return value.toDate().toISOString();
 };
 
 /**
@@ -21,13 +21,13 @@ const toISOString = (value: Timestamp | Date): string => {
  * @returns Review object
  */
 const mapDocToReview = (doc: FirebaseFirestore.DocumentSnapshot): Review => {
-  const data = doc.data()!;
-  return {
-    ...data,
-    id: doc.id,
-    createdAt: toISOString(data.createdAt),
-    updatedAt: toISOString(data.updatedAt),
-  } as unknown as Review;
+	const data = doc.data()!;
+	return {
+		...data,
+		id: doc.id,
+		createdAt: toISOString(data.createdAt),
+		updatedAt: toISOString(data.updatedAt),
+	} as unknown as Review;
 };
 
 /**
@@ -35,14 +35,14 @@ const mapDocToReview = (doc: FirebaseFirestore.DocumentSnapshot): Review => {
  * @returns Array of all reviews
  */
 export const getAllReviews = async (): Promise<Review[]> => {
-  try {
-    const snapshot = await reviewRepository.getAllReviews();
-    return snapshot.docs
-      .filter((doc) => doc.data() !== undefined)
-      .map(mapDocToReview);
-  } catch (error) {
-    throw new ServiceError("Failed to retrieve reviews", "GET_REVIEWS_FAILED");
-  }
+	try {
+		const snapshot = await reviewRepository.getAllReviews();
+		return snapshot.docs
+			.filter((doc) => doc.data() !== undefined)
+			.map(mapDocToReview);
+	} catch (error) {
+		throw new ServiceError("Failed to retrieve reviews", "GET_REVIEWS_FAILED");
+	}
 };
 
 /**
@@ -51,13 +51,13 @@ export const getAllReviews = async (): Promise<Review[]> => {
  * @returns The review object
  */
 export const getReviewById = async (id: string): Promise<Review> => {
-  const doc = await reviewRepository.getReviewById(id);
-  if (!doc) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
+	const doc = await reviewRepository.getReviewById(id);
+	if (!doc) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
 
-  const data = doc.data();
-  if (!data) throw new ServiceError("Review data is missing", "REVIEW_DATA_MISSING", 404);
+	const data = doc.data();
+	if (!data) throw new ServiceError("Review data is missing", "REVIEW_DATA_MISSING", 404);
 
-  return mapDocToReview(doc);
+	return mapDocToReview(doc);
 };
 
 /**
@@ -67,30 +67,30 @@ export const getReviewById = async (id: string): Promise<Review> => {
  * @returns The created review object
  */
 export const createReview = async (
-  data: Pick<Review, "gameTitle" | "score" | "review">,
-  uid?: string
+	data: Pick<Review, "gameTitle" | "score" | "review">,
+	uid?: string
 ): Promise<Review> => {
-  const now = new Date();
-  const review: Partial<Review> = { ...data, createdAt: now, updatedAt: now };
-  const id = await reviewRepository.createReview(review);
+	const now = new Date();
+	const review: Partial<Review> = { ...data, createdAt: now, updatedAt: now };
+	const id = await reviewRepository.createReview(review);
 
-  // Send review confirmation email
-  if (uid) {
-    try {
-      const userRecord = await auth.getUser(uid);
-      const userEmail = userRecord.email;
-      if (userEmail) {
-        await sendReviewEmail(userEmail, data.gameTitle, data.score);
-      }
-    } catch (error) {
-      console.error("Failed to send review email:", error);
-    }
-  }
+	// Send review confirmation email
+	if (uid) {
+		try {
+			const userRecord = await auth.getUser(uid);
+			const userEmail = userRecord.email;
+			if (userEmail) {
+				await sendReviewEmail(userEmail, data.gameTitle, data.score);
+			}
+		} catch (error) {
+			console.error("Failed to send review email:", error);
+		}
+	}
 
-  const created = await reviewRepository.getReviewById(id);
-  if (!created) throw new ServiceError("Review not found after creation", "REVIEW_NOT_FOUND", 404);
+	const created = await reviewRepository.getReviewById(id);
+	if (!created) throw new ServiceError("Review not found after creation", "REVIEW_NOT_FOUND", 404);
 
-  return mapDocToReview(created);
+	return mapDocToReview(created);
 };
 
 /**
@@ -100,18 +100,18 @@ export const createReview = async (
  * @returns The updated review object
  */
 export const updateReview = async (
-  id: string,
-  data: Partial<Pick<Review, "gameTitle" | "score" | "review">>
+	id: string,
+	data: Partial<Pick<Review, "gameTitle" | "score" | "review">>
 ): Promise<Review> => {
-  const existing = await reviewRepository.getReviewById(id);
-  if (!existing) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
+	const existing = await reviewRepository.getReviewById(id);
+	if (!existing) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
 
-  await reviewRepository.updateReview(id, { ...data, updatedAt: new Date() });
+	await reviewRepository.updateReview(id, { ...data, updatedAt: new Date() });
 
-  const updated = await reviewRepository.getReviewById(id);
-  if (!updated) throw new ServiceError("Review not found after update", "REVIEW_NOT_FOUND", 404);
+	const updated = await reviewRepository.getReviewById(id);
+	if (!updated) throw new ServiceError("Review not found after update", "REVIEW_NOT_FOUND", 404);
 
-  return mapDocToReview(updated);
+	return mapDocToReview(updated);
 };
 
 /**
@@ -120,10 +120,10 @@ export const updateReview = async (
  * @returns The deleted review object
  */
 export const deleteReview = async (id: string): Promise<Review> => {
-  const existing = await reviewRepository.getReviewById(id);
-  if (!existing) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
+	const existing = await reviewRepository.getReviewById(id);
+	if (!existing) throw new ServiceError("Review not found", "REVIEW_NOT_FOUND", 404);
 
-  const deletedReview = mapDocToReview(existing);
-  await reviewRepository.deleteReview(id);
-  return deletedReview;
+	const deletedReview = mapDocToReview(existing);
+	await reviewRepository.deleteReview(id);
+	return deletedReview;
 };

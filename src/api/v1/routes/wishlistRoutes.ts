@@ -24,10 +24,10 @@ const router: Router = express.Router();
  *         description: Forbidden
  */
 router.get(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  wishlistController.getAllWishlistItems
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	wishlistController.getAllWishlistItems
 );
 
 /**
@@ -55,11 +55,11 @@ router.get(
  *         description: Wishlist item not found
  */
 router.get(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  validateRequest(wishlistSchemas.getById),
-  wishlistController.getWishlistItemById
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	validateRequest(wishlistSchemas.getById),
+	wishlistController.getWishlistItemById
 );
 
 /**
@@ -87,11 +87,11 @@ router.get(
  *         description: Forbidden
  */
 router.post(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(wishlistSchemas.create),
-  wishlistController.createWishlistItem
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(wishlistSchemas.create),
+	wishlistController.createWishlistItem
 );
 
 /**
@@ -125,11 +125,11 @@ router.post(
  *         description: Wishlist item not found
  */
 router.put(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(wishlistSchemas.update),
-  wishlistController.updateWishlistItem
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(wishlistSchemas.update),
+	wishlistController.updateWishlistItem
 );
 
 /**
@@ -157,11 +157,11 @@ router.put(
  *         description: Wishlist item not found
  */
 router.delete(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(wishlistSchemas.delete),
-  wishlistController.deleteWishlistItem
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(wishlistSchemas.delete),
+	wishlistController.deleteWishlistItem
 );
 
 export default router;

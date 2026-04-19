@@ -13,23 +13,23 @@ import { sendWelcomeEmail } from "../services/emailService";
  * @param next - Express next function
  */
 export const setCustomClaims = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  const { uid, claims } = req.body;
+	const { uid, claims } = req.body;
 
-  try {
-    await auth.setCustomUserClaims(uid, claims);
-    res.status(HTTP_STATUS.OK).json(
-      successResponse(
-        { uid, claims },
-        "Custom claims set successfully. User must obtain a new token for changes to take effect."
-      )
-    );
-  } catch (error) {
-    next(error);
-  }
+	try {
+		await auth.setCustomUserClaims(uid, claims);
+		res.status(HTTP_STATUS.OK).json(
+			successResponse(
+				{ uid, claims },
+				"Custom claims set successfully. User must obtain a new token for changes to take effect."
+			)
+		);
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
@@ -40,18 +40,18 @@ export const setCustomClaims = async (
  * @param next - Express next function
  */
 export const getUserDetails = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  const { id } = req.params;
+	const { id } = req.params;
 
-  try {
-    const user = await auth.getUser(id as string);
-    res.status(HTTP_STATUS.OK).json(successResponse(user));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const user = await auth.getUser(id as string);
+		res.status(HTTP_STATUS.OK).json(successResponse(user));
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
@@ -61,38 +61,38 @@ export const getUserDetails = async (
  * @param next - Express next function
  */
 export const createUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  const { email, password, displayName } = req.body;
+	const { email, password, displayName } = req.body;
 
-  try {
-    // Creates the user in Firebase Auth
-    const userRecord = await auth.createUser({
-      email,
-      password,
-      displayName,
-    });
+	try {
+		// Creates the user in Firebase Auth
+		const userRecord = await auth.createUser({
+			email,
+			password,
+			displayName,
+		});
 
-    // Automatically assigns default "user" role
-    await auth.setCustomUserClaims(userRecord.uid, { role: "user" });
+		// Automatically assigns default "user" role
+		await auth.setCustomUserClaims(userRecord.uid, { role: "user" });
 
-    // Sends welcome email
-    await sendWelcomeEmail(email, displayName ?? email);
+		// Sends welcome email
+		await sendWelcomeEmail(email, displayName ?? email);
 
-    res.status(HTTP_STATUS.CREATED).json(
-      successResponse(
-        {
-          uid: userRecord.uid,
-          email: userRecord.email,
-          displayName: userRecord.displayName,
-          role: "user",
-        },
-        "User created successfully. Welcome email sent."
-      )
-    );
-  } catch (error) {
-    next(error);
-  }
+		res.status(HTTP_STATUS.CREATED).json(
+			successResponse(
+				{
+					uid: userRecord.uid,
+					email: userRecord.email,
+					displayName: userRecord.displayName,
+					role: "user",
+				},
+				"User created successfully. Welcome email sent."
+			)
+		);
+	} catch (error) {
+		next(error);
+	}
 };

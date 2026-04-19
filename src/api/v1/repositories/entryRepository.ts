@@ -9,7 +9,7 @@ const COLLECTION = "entries";
  * @returns The ID of the created document
  */
 export const createEntry = async (data: Partial<BacklogEntry>): Promise<string> => {
-  return firestoreRepository.createDocument<BacklogEntry>(COLLECTION, data);
+	return firestoreRepository.createDocument<BacklogEntry>(COLLECTION, data);
 };
 
 /**
@@ -17,7 +17,7 @@ export const createEntry = async (data: Partial<BacklogEntry>): Promise<string> 
  * @returns QuerySnapshot of all entries
  */
 export const getAllEntries = async (): Promise<FirebaseFirestore.QuerySnapshot> => {
-  return firestoreRepository.getDocuments(COLLECTION);
+	return firestoreRepository.getDocuments(COLLECTION);
 };
 
 /**
@@ -26,9 +26,9 @@ export const getAllEntries = async (): Promise<FirebaseFirestore.QuerySnapshot> 
  * @returns DocumentSnapshot or null
  */
 export const getEntryById = async (
-  id: string
+	id: string
 ): Promise<FirebaseFirestore.DocumentSnapshot | null> => {
-  return firestoreRepository.getDocumentById(COLLECTION, id);
+	return firestoreRepository.getDocumentById(COLLECTION, id);
 };
 
 /**
@@ -37,7 +37,7 @@ export const getEntryById = async (
  * @param data - Fields to update
  */
 export const updateEntry = async (id: string, data: Partial<BacklogEntry>): Promise<void> => {
-  return firestoreRepository.updateDocument<BacklogEntry>(COLLECTION, id, data);
+	return firestoreRepository.updateDocument<BacklogEntry>(COLLECTION, id, data);
 };
 
 /**
@@ -45,5 +45,5 @@ export const updateEntry = async (id: string, data: Partial<BacklogEntry>): Prom
  * @param id - Entry document ID
  */
 export const deleteEntry = async (id: string): Promise<void> => {
-  return firestoreRepository.deleteDocument(COLLECTION, id);
+	return firestoreRepository.deleteDocument(COLLECTION, id);
 };

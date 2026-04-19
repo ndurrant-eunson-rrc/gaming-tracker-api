@@ -24,10 +24,10 @@ const router: Router = express.Router();
  *         description: Forbidden
  */
 router.get(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  entryController.getAllEntries
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	entryController.getAllEntries
 );
 
 /**
@@ -55,11 +55,11 @@ router.get(
  *         description: Entry not found
  */
 router.get(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
-  validateRequest(entrySchemas.getById),
-  entryController.getEntryById
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	validateRequest(entrySchemas.getById),
+	entryController.getEntryById
 );
 
 /**
@@ -87,11 +87,11 @@ router.get(
  *         description: Forbidden
  */
 router.post(
-  "/",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(entrySchemas.create),
-  entryController.createEntry
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(entrySchemas.create),
+	entryController.createEntry
 );
 
 /**
@@ -125,11 +125,11 @@ router.post(
  *         description: Entry not found
  */
 router.put(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(entrySchemas.update),
-  entryController.updateEntry
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(entrySchemas.update),
+	entryController.updateEntry
 );
 
 /**
@@ -157,11 +157,11 @@ router.put(
  *         description: Entry not found
  */
 router.delete(
-  "/:id",
-  authenticate,
-  isAuthorized({ hasRole: ["admin", "user"] }),
-  validateRequest(entrySchemas.delete),
-  entryController.deleteEntry
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(entrySchemas.delete),
+	entryController.deleteEntry
 );
 
 export default router;

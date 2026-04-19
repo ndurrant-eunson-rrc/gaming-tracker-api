@@ -11,8 +11,8 @@ import { sendWishlistEmail } from "./emailService";
  * @returns ISO date string
  */
 const toISOString = (value: Timestamp | Date): string => {
-  if (value instanceof Date) return value.toISOString();
-  return value.toDate().toISOString();
+	if (value instanceof Date) return value.toISOString();
+	return value.toDate().toISOString();
 };
 
 /**
@@ -21,13 +21,13 @@ const toISOString = (value: Timestamp | Date): string => {
  * @returns Wishlist object
  */
 const mapDocToWishlist = (doc: FirebaseFirestore.DocumentSnapshot): Wishlist => {
-  const data = doc.data()!;
-  return {
-    ...data,
-    id: doc.id,
-    addedAt: toISOString(data.addedAt),
-    updatedAt: toISOString(data.updatedAt),
-  } as unknown as Wishlist;
+	const data = doc.data()!;
+	return {
+		...data,
+		id: doc.id,
+		addedAt: toISOString(data.addedAt),
+		updatedAt: toISOString(data.updatedAt),
+	} as unknown as Wishlist;
 };
 
 /**
@@ -35,14 +35,14 @@ const mapDocToWishlist = (doc: FirebaseFirestore.DocumentSnapshot): Wishlist => 
  * @returns Array of all wishlist items
  */
 export const getAllWishlistItems = async (): Promise<Wishlist[]> => {
-  try {
-    const snapshot = await wishlistRepository.getAllWishlistItems();
-    return snapshot.docs
-      .filter((doc) => doc.data() !== undefined)
-      .map(mapDocToWishlist);
-  } catch (error) {
-    throw new ServiceError("Failed to retrieve wishlist items", "GET_WISHLIST_FAILED");
-  }
+	try {
+		const snapshot = await wishlistRepository.getAllWishlistItems();
+		return snapshot.docs
+			.filter((doc) => doc.data() !== undefined)
+			.map(mapDocToWishlist);
+	} catch (error) {
+		throw new ServiceError("Failed to retrieve wishlist items", "GET_WISHLIST_FAILED");
+	}
 };
 
 /**
@@ -51,13 +51,13 @@ export const getAllWishlistItems = async (): Promise<Wishlist[]> => {
  * @returns The wishlist item object
  */
 export const getWishlistItemById = async (id: string): Promise<Wishlist> => {
-  const doc = await wishlistRepository.getWishlistItemById(id);
-  if (!doc) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
+	const doc = await wishlistRepository.getWishlistItemById(id);
+	if (!doc) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
 
-  const data = doc.data();
-  if (!data) throw new ServiceError("Wishlist item data is missing", "WISHLIST_DATA_MISSING", 404);
+	const data = doc.data();
+	if (!data) throw new ServiceError("Wishlist item data is missing", "WISHLIST_DATA_MISSING", 404);
 
-  return mapDocToWishlist(doc);
+	return mapDocToWishlist(doc);
 };
 
 /**
@@ -67,30 +67,30 @@ export const getWishlistItemById = async (id: string): Promise<Wishlist> => {
  * @returns The created wishlist item object
  */
 export const createWishlistItem = async (
-  data: Pick<Wishlist, "gameTitle" | "priority"> & Partial<Pick<Wishlist, "notes">>,
-  uid?: string
+	data: Pick<Wishlist, "gameTitle" | "priority"> & Partial<Pick<Wishlist, "notes">>,
+	uid?: string
 ): Promise<Wishlist> => {
-  const now = new Date();
-  const item: Partial<Wishlist> = { ...data, addedAt: now, updatedAt: now };
-  const id = await wishlistRepository.createWishlistItem(item);
+	const now = new Date();
+	const item: Partial<Wishlist> = { ...data, addedAt: now, updatedAt: now };
+	const id = await wishlistRepository.createWishlistItem(item);
 
-  // Send wishlist confirmation email
-  if (uid) {
-    try {
-      const userRecord = await auth.getUser(uid);
-      const userEmail = userRecord.email;
-      if (userEmail) {
-        await sendWishlistEmail(userEmail, data.gameTitle, data.priority);
-      }
-    } catch (error) {
-      console.error("Failed to send wishlist email:", error);
-    }
-  }
+	// Send wishlist confirmation email
+	if (uid) {
+		try {
+			const userRecord = await auth.getUser(uid);
+			const userEmail = userRecord.email;
+			if (userEmail) {
+				await sendWishlistEmail(userEmail, data.gameTitle, data.priority);
+			}
+		} catch (error) {
+			console.error("Failed to send wishlist email:", error);
+		}
+	}
 
-  const created = await wishlistRepository.getWishlistItemById(id);
-  if (!created) throw new ServiceError("Wishlist item not found after creation", "WISHLIST_ITEM_NOT_FOUND", 404);
+	const created = await wishlistRepository.getWishlistItemById(id);
+	if (!created) throw new ServiceError("Wishlist item not found after creation", "WISHLIST_ITEM_NOT_FOUND", 404);
 
-  return mapDocToWishlist(created);
+	return mapDocToWishlist(created);
 };
 
 /**
@@ -100,18 +100,18 @@ export const createWishlistItem = async (
  * @returns The updated wishlist item object
  */
 export const updateWishlistItem = async (
-  id: string,
-  data: Partial<Pick<Wishlist, "gameTitle" | "priority" | "notes">>
+	id: string,
+	data: Partial<Pick<Wishlist, "gameTitle" | "priority" | "notes">>
 ): Promise<Wishlist> => {
-  const existing = await wishlistRepository.getWishlistItemById(id);
-  if (!existing) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
+	const existing = await wishlistRepository.getWishlistItemById(id);
+	if (!existing) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
 
-  await wishlistRepository.updateWishlistItem(id, { ...data, updatedAt: new Date() });
+	await wishlistRepository.updateWishlistItem(id, { ...data, updatedAt: new Date() });
 
-  const updated = await wishlistRepository.getWishlistItemById(id);
-  if (!updated) throw new ServiceError("Wishlist item not found after update", "WISHLIST_ITEM_NOT_FOUND", 404);
+	const updated = await wishlistRepository.getWishlistItemById(id);
+	if (!updated) throw new ServiceError("Wishlist item not found after update", "WISHLIST_ITEM_NOT_FOUND", 404);
 
-  return mapDocToWishlist(updated);
+	return mapDocToWishlist(updated);
 };
 
 /**
@@ -120,10 +120,10 @@ export const updateWishlistItem = async (
  * @returns The deleted wishlist item object
  */
 export const deleteWishlistItem = async (id: string): Promise<Wishlist> => {
-  const existing = await wishlistRepository.getWishlistItemById(id);
-  if (!existing) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
+	const existing = await wishlistRepository.getWishlistItemById(id);
+	if (!existing) throw new ServiceError("Wishlist item not found", "WISHLIST_ITEM_NOT_FOUND", 404);
 
-  const deletedItem = mapDocToWishlist(existing);
-  await wishlistRepository.deleteWishlistItem(id);
-  return deletedItem;
+	const deletedItem = mapDocToWishlist(existing);
+	await wishlistRepository.deleteWishlistItem(id);
+	return deletedItem;
 };
