@@ -62,6 +62,7 @@ export const createEntry = async (
 
 /**
  * Updates an existing backlog entry and returns the updated entry
+ * Passes the authenticated user's UID so a completion email can be sent
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function

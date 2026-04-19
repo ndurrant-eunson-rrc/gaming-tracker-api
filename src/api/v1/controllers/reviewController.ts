@@ -42,7 +42,9 @@ export const getReviewById = async (
 };
 
 /**
- * Creates a new review and returns the created review
+ * Creates a new review and returns the created review.
+ * Sends a confirmation email to the user after creation,
+ * by passing authenticated user's UID to the service layer.
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function

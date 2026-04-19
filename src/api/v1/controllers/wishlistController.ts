@@ -42,7 +42,9 @@ export const getWishlistItemById = async (
 };
 
 /**
- * Creates a new wishlist item and returns the created item
+ * Creates a new wishlist item and returns the created item.
+ * Sends a confirmation email to the user after creation,
+ * by passing authenticated user's UID to the service layer.
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
