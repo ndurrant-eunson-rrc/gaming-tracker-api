@@ -10,16 +10,16 @@ import { HTTP_STATUS } from "../../../constants/httpConstants";
  * @param next - Express next function
  */
 export const getAllReviews = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  try {
-    const reviews = await reviewService.getAllReviews();
-    res.status(HTTP_STATUS.OK).json(successResponse(reviews));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const reviews = await reviewService.getAllReviews();
+		res.status(HTTP_STATUS.OK).json(successResponse(reviews));
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
@@ -29,35 +29,38 @@ export const getAllReviews = async (
  * @param next - Express next function
  */
 export const getReviewById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  try {
-    const review = await reviewService.getReviewById(req.params.id as string);
-    res.status(HTTP_STATUS.OK).json(successResponse(review));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const review = await reviewService.getReviewById(req.params.id as string);
+		res.status(HTTP_STATUS.OK).json(successResponse(review));
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
- * Creates a new review
+ * Creates a new review and returns the created review.
+ * Sends a confirmation email to the user after creation,
+ * by passing authenticated user's UID to the service layer.
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
  */
 export const createReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  try {
-    const id = await reviewService.createReview(req.body);
-    res.status(HTTP_STATUS.CREATED).json(successResponse({ id }, "Review created"));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const uid: string = res.locals.uid;
+		const createdReview = await reviewService.createReview(req.body, uid);
+		res.status(HTTP_STATUS.CREATED).json(successResponse(createdReview, "Review created"));
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
@@ -67,33 +70,33 @@ export const createReview = async (
  * @param next - Express next function
  */
 export const updateReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  try {
-    const updatedReview = await reviewService.updateReview(req.params.id as string, req.body);
-    res.status(HTTP_STATUS.OK).json(successResponse(updatedReview, "Review updated"));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const updatedReview = await reviewService.updateReview(req.params.id as string, req.body);
+		res.status(HTTP_STATUS.OK).json(successResponse(updatedReview, "Review updated"));
+	} catch (error) {
+		next(error);
+	}
 };
 
 /**
- * Deletes a review by ID
+ * Deletes a review and returns the deleted review
  * @param req - Express request object
  * @param res - Express response object
  * @param next - Express next function
  */
 export const deleteReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ): Promise<void> => {
-  try {
-    await reviewService.deleteReview(req.params.id as string);
-    res.status(HTTP_STATUS.OK).json(successResponse({}, "Review deleted"));
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const deletedReview = await reviewService.deleteReview(req.params.id as string);
+		res.status(HTTP_STATUS.OK).json(successResponse(deletedReview, "Review deleted"));
+	} catch (error) {
+		next(error);
+	}
 };

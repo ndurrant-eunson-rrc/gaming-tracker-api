@@ -9,7 +9,7 @@ const COLLECTION = "wishlist";
  * @returns The ID of the created document
  */
 export const createWishlistItem = async (data: Partial<Wishlist>): Promise<string> => {
-  return firestoreRepository.createDocument<Wishlist>(COLLECTION, data);
+	return firestoreRepository.createDocument<Wishlist>(COLLECTION, data);
 };
 
 /**
@@ -17,7 +17,7 @@ export const createWishlistItem = async (data: Partial<Wishlist>): Promise<strin
  * @returns QuerySnapshot of all wishlist items
  */
 export const getAllWishlistItems = async (): Promise<FirebaseFirestore.QuerySnapshot> => {
-  return firestoreRepository.getDocuments(COLLECTION);
+	return firestoreRepository.getDocuments(COLLECTION);
 };
 
 /**
@@ -26,9 +26,9 @@ export const getAllWishlistItems = async (): Promise<FirebaseFirestore.QuerySnap
  * @returns DocumentSnapshot or null
  */
 export const getWishlistItemById = async (
-  id: string
+	id: string
 ): Promise<FirebaseFirestore.DocumentSnapshot | null> => {
-  return firestoreRepository.getDocumentById(COLLECTION, id);
+	return firestoreRepository.getDocumentById(COLLECTION, id);
 };
 
 /**
@@ -37,7 +37,7 @@ export const getWishlistItemById = async (
  * @param data - Fields to update
  */
 export const updateWishlistItem = async (id: string, data: Partial<Wishlist>): Promise<void> => {
-  return firestoreRepository.updateDocument<Wishlist>(COLLECTION, id, data);
+	return firestoreRepository.updateDocument<Wishlist>(COLLECTION, id, data);
 };
 
 /**
@@ -45,5 +45,5 @@ export const updateWishlistItem = async (id: string, data: Partial<Wishlist>): P
  * @param id - Wishlist item document ID
  */
 export const deleteWishlistItem = async (id: string): Promise<void> => {
-  return firestoreRepository.deleteDocument(COLLECTION, id);
+	return firestoreRepository.deleteDocument(COLLECTION, id);
 };

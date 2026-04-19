@@ -1,5 +1,7 @@
 import express, { Router } from "express";
-import * as reviewController from "./../controllers/reviewController";
+import * as reviewController from "../controllers/reviewController";
+import authenticate from "../middleware/authenticate";
+import isAuthorized from "../middleware/authorize";
 import { validateRequest } from "../middleware/validate";
 import { reviewSchemas } from "../validation/reviewSchemas";
 
@@ -11,22 +13,22 @@ const router: Router = express.Router();
  *   get:
  *     summary: Get all reviews
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: List of reviews retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Review'
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  */
-router.get("/", validateRequest(reviewSchemas.create), reviewController.getAllReviews);
+router.get(
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	reviewController.getAllReviews
+);
 
 /**
  * @openapi
@@ -34,6 +36,8 @@ router.get("/", validateRequest(reviewSchemas.create), reviewController.getAllRe
  *   get:
  *     summary: Get a single review by ID
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -43,14 +47,20 @@ router.get("/", validateRequest(reviewSchemas.create), reviewController.getAllRe
  *     responses:
  *       '200':
  *         description: Review retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Review'
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  *       '404':
  *         description: Review not found
  */
-router.get("/:id", validateRequest(reviewSchemas.getById), reviewController.getReviewById);
+router.get(
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user", "viewer"] }),
+	validateRequest(reviewSchemas.getById),
+	reviewController.getReviewById
+);
 
 /**
  * @openapi
@@ -58,6 +68,8 @@ router.get("/:id", validateRequest(reviewSchemas.getById), reviewController.getR
  *   post:
  *     summary: Create a new review
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -69,8 +81,18 @@ router.get("/:id", validateRequest(reviewSchemas.getById), reviewController.getR
  *         description: Review created successfully
  *       '400':
  *         description: Validation error
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  */
-router.post("/", validateRequest(reviewSchemas.create), reviewController.createReview);
+router.post(
+	"/",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.create),
+	reviewController.createReview
+);
 
 /**
  * @openapi
@@ -78,6 +100,8 @@ router.post("/", validateRequest(reviewSchemas.create), reviewController.createR
  *   put:
  *     summary: Update an existing review
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -93,10 +117,20 @@ router.post("/", validateRequest(reviewSchemas.create), reviewController.createR
  *     responses:
  *       '200':
  *         description: Review updated successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  *       '404':
  *         description: Review not found
  */
-router.put("/:id", validateRequest(reviewSchemas.update), reviewController.updateReview);
+router.put(
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.update),
+	reviewController.updateReview
+);
 
 /**
  * @openapi
@@ -104,6 +138,8 @@ router.put("/:id", validateRequest(reviewSchemas.update), reviewController.updat
  *   delete:
  *     summary: Delete a review
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -113,9 +149,19 @@ router.put("/:id", validateRequest(reviewSchemas.update), reviewController.updat
  *     responses:
  *       '200':
  *         description: Review deleted successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  *       '404':
  *         description: Review not found
  */
-router.delete("/:id", validateRequest(reviewSchemas.delete), reviewController.deleteReview);
+router.delete(
+	"/:id",
+	authenticate,
+	isAuthorized({ hasRole: ["admin", "user"] }),
+	validateRequest(reviewSchemas.delete),
+	reviewController.deleteReview
+);
 
 export default router;

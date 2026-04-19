@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/ndurrant-eunson-rrc/gaming-tracker-api#readme",
   "dependencies": {
+    "@types/nodemailer": "^8.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
@@ -29,6 +30,7 @@
     "helmet": "^8.1.0",
     "joi": "^18.1.2",
     "morgan": "^1.10.1",
+    "nodemailer": "^8.0.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
