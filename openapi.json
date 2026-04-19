@@ -18,6 +18,134 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
+    },
+    "schemas": {
+      "BacklogEntry": {
+        "type": "object",
+        "required": [
+          "title",
+          "genre",
+          "platform",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "example": "Final Fantasy IX"
+          },
+          "genre": {
+            "type": "string",
+            "example": "JRPG"
+          },
+          "platform": {
+            "type": "string",
+            "example": "Steam"
+          },
+          "franchise": {
+            "type": "string",
+            "example": "Final Fantasy"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "want_to_play",
+              "playing",
+              "completed"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "required": [
+          "gameTitle",
+          "score",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "gameTitle": {
+            "type": "string",
+            "example": "Final Fantasy IX"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "example": 8
+          },
+          "review": {
+            "type": "string",
+            "example": "absolute masterpiece obviously"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Wishlist": {
+        "type": "object",
+        "required": [
+          "gameTitle",
+          "priority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "gameTitle": {
+            "type": "string",
+            "example": "Hollow Knight"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "example": "high"
+          },
+          "notes": {
+            "type": "string",
+            "example": "On sale during summer"
+          },
+          "addedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     }
   },
   "security": [
@@ -26,38 +154,178 @@
     }
   ],
   "paths": {
-    "/entries": {
-      "get": {
-        "summary": "Get all backlog entries",
+    "/admin/setCustomClaims": {
+      "post": {
+        "summary": "Set a role for a user (admin only)",
         "tags": [
-          "Entries"
+          "Admin"
         ],
-        "responses": {
-          "200": {
-            "description": "List of entries retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/BacklogEntry"
-                      }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "uid",
+                  "claims"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "The Firebase UID of the user",
+                    "example": "abc123uid"
+                  },
+                  "claims": {
+                    "type": "object",
+                    "description": "The claims to set on the user",
+                    "example": {
+                      "role": "admin"
                     }
                   }
                 }
               }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "Claims set successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/admin/users/{id}": {
+      "get": {
+        "summary": "Get a user's details (admin only)",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The Firebase UID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "post": {
+        "summary": "Create a new user and send a welcome email (admin only)",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "example": "Tom Cruise"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created and welcome email sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/entries": {
+      "get": {
+        "summary": "Get all backlog entries",
+        "tags": [
+          "Entries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of entries retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
         }
       },
       "post": {
-        "summary": "Create a new entry",
+        "summary": "Create a new backlog entry",
+        "tags": [
+          "Entries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -74,6 +342,12 @@
           },
           "400": {
             "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -83,6 +357,11 @@
         "summary": "Get a single entry by ID",
         "tags": [
           "Entries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -96,14 +375,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Entry retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BacklogEntry"
-                }
-              }
-            }
+            "description": "Entry retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Entry not found"
@@ -114,6 +392,11 @@
         "summary": "Update an existing backlog entry",
         "tags": [
           "Entries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -139,6 +422,12 @@
           "200": {
             "description": "Entry updated successfully"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Entry not found"
           }
@@ -148,6 +437,11 @@
         "summary": "Delete a backlog entry",
         "tags": [
           "Entries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -162,6 +456,12 @@
         "responses": {
           "200": {
             "description": "Entry deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Entry not found"
@@ -209,27 +509,20 @@
         "tags": [
           "Reviews"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of reviews retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Review"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "description": "List of reviews retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -237,6 +530,11 @@
         "summary": "Create a new review",
         "tags": [
           "Reviews"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "required": true,
@@ -254,6 +552,12 @@
           },
           "400": {
             "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -263,6 +567,11 @@
         "summary": "Get a single review by ID",
         "tags": [
           "Reviews"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -276,14 +585,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Review retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Review"
-                }
-              }
-            }
+            "description": "Review retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Review not found"
@@ -294,6 +602,11 @@
         "summary": "Update an existing review",
         "tags": [
           "Reviews"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -319,6 +632,12 @@
           "200": {
             "description": "Review updated successfully"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Review not found"
           }
@@ -328,6 +647,11 @@
         "summary": "Delete a review",
         "tags": [
           "Reviews"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -343,8 +667,190 @@
           "200": {
             "description": "Review deleted successfully"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Review not found"
+          }
+        }
+      }
+    },
+    "/wishlist": {
+      "get": {
+        "summary": "Get all wishlist items",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of wishlist items retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new item to the wishlist",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wishlist"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Wishlist item created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/wishlist/{id}": {
+      "get": {
+        "summary": "Get a single wishlist item by ID",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wishlist item retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Wishlist item not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing wishlist item",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wishlist"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wishlist item updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Wishlist item not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a wishlist item",
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wishlist item deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Wishlist item not found"
           }
         }
       }
